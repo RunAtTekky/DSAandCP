@@ -41,7 +41,7 @@
 	"Vector Output": {
 	"prefix": "vecout",
 	"body": [
-		"for (auto &${1:ele} : ${2:vec}) cout << ${1:ele};",
+		"for (auto &${1:ele} : ${2:vec}) cout << ${1:ele} << \" \";",
 		"cout << \"\\n\";",
 		"\n"
 	],
