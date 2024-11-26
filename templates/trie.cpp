@@ -5,18 +5,18 @@ class Trie {
 
 public:
 
-	//N is number of possible characters in a string
+	// n is number of possible characters in a string
 	const static int N = 26;
 
-	//baseChar defines the base character for possible characters
-	//like '0' for '0','1','2'... as possible characters in string 
+	// BaseChar defines the base character for possible characters
+	// Like '0' for '0','1','2'... as possible characters in string 
 	const static char baseChar = 'a';
 
 	struct TrieNode {
 		int next[N];
-		//if isEnd is set to true , a string ended here
+		// If isEnd is set to true , a string ended here
 		bool isEnd;
-		//freq is how many times this prefix occurs
+		// Freq is how many times this prefix occurs
 		int freq;
 
 		TrieNode() {
@@ -26,33 +26,35 @@ public:
 		}
 	};
 
-	//the implementation is via vector and each position in this vector
-	//is similar as new pointer in pointer type implementation
+	// The implementation is via vector and each position in this vector
+	// Is similar as new pointer in pointer type implementation
 	vector <TrieNode> tree;
 
-	//Base Constructor
+	// Base Constructor
 	Trie () {
 		tree.push_back(TrieNode());
 	}
 
-	//inserting a string in trie
+	// Inserting a string in trie
 	void insert(const string& s) {
+		// p is the current node index
 		int p = 0;
 		tree[p].freq++;
 		for(int i=0;i<s.size();i++) {
-			// tree[]
 			if(tree[p].next[s[i]-baseChar] == -1) {
 				tree.push_back(TrieNode());
+				// We are pointing to the index of newly created node
 				tree[p].next[s[i]-baseChar] = tree.size()-1;
 			}
 
+			// Point to the index of the character s[i]
 			p = tree[p].next[s[i]-baseChar];
 			tree[p].freq++;
 		}
 		tree[p].isEnd = true;
 	}
 
-	//check if a string exists as prefix
+	// Check if a string exists as prefix
 	bool checkPrefix(const string &s) {
 		int p = 0;
 		for(int i=0;i<s.size();i++) {
@@ -63,7 +65,7 @@ public:
 		return true;
 	}
 
-	//check is string exists
+	// Check is string exists
 	bool checkString(const string &s) {
 		int p = 0;
 		for(int i=0;i<s.size();i++) {
@@ -75,8 +77,8 @@ public:
 		return tree[p].isEnd;
 	}
 
-	//persistent insert
-	//returns location of new head
+	// Persistent insert
+	// Returns location of new head
 	int persistentInsert(int head , const string &s) {
 		int old = head;
 
@@ -115,7 +117,7 @@ public:
 		return newHead;
 	}
 
-	//persistent check prefix
+	// Persistent check prefix
 	bool persistentCheckPrefix(int head, const string &s) {
 		int p = head;
 		for(int i=0;i<s.size();i++) {
@@ -126,7 +128,7 @@ public:
 		return true;
 	}
 
-	//persistent check string
+	// Persistent check string
 	bool persistentCheckString(int head, const string &s) {
 		int p = head;
 		for(int i=0;i<s.size();i++) {
@@ -142,39 +144,39 @@ string s,temp;
 int main() {
 	Trie trie = Trie();
 
-	cout << trie.checkString("hello") << endl;	//output : 0
+	cout << trie.checkString("hello") << endl;	// Output : 0
 
 	trie.insert("hello");
 
-	cout << trie.checkPrefix("hell") << endl;	//output : 1
+	cout << trie.checkPrefix("hell") << endl;	// Output : 1
 
-	cout << trie.checkString("hell") << endl;	//output : 0
+	cout << trie.checkString("hell") << endl;	// Output : 0
 
-	cout << trie.checkString("hello") << endl;	//output : 1
+	cout << trie.checkString("hello") << endl;	// Output : 1
 
 
-	//Example for persistent trie 
+	// Example for persistent trie 
 	Trie persistentTrie = Trie();
 	vector <int> heads;
 
-	//insert words 
+	// Insert words 
 	heads.push_back(0);
 	heads.push_back(persistentTrie.persistentInsert(heads[heads.size()-1] , "hello"));
 	heads.push_back(persistentTrie.persistentInsert(heads[heads.size()-1] , "world"));
 	heads.push_back(persistentTrie.persistentInsert(heads[heads.size()-1] , "persistent"));
 	heads.push_back(persistentTrie.persistentInsert(heads[heads.size()-1] , "trie"));
 
-	cout << persistentTrie.persistentCheckString(heads[0] , "hello") << endl;	//output : 0
-	cout << persistentTrie.persistentCheckString(heads[1] , "hello") << endl;	//output : 1
+	cout << persistentTrie.persistentCheckString(heads[0] , "hello") << endl;	// Output : 0
+	cout << persistentTrie.persistentCheckString(heads[1] , "hello") << endl;	// Output : 1
 
-	cout << persistentTrie.persistentCheckString(heads[1] , "world") << endl;	//output : 0
-	cout << persistentTrie.persistentCheckString(heads[2] , "world") << endl;	//output : 1
+	cout << persistentTrie.persistentCheckString(heads[1] , "world") << endl;	// Output : 0
+	cout << persistentTrie.persistentCheckString(heads[2] , "world") << endl;	// Output : 1
 
-	cout << persistentTrie.persistentCheckString(heads[2] , "persistent") << endl;	//output : 0
-	cout << persistentTrie.persistentCheckString(heads[3] , "persistent") << endl;	//output : 1
+	cout << persistentTrie.persistentCheckString(heads[2] , "persistent") << endl;	// Output : 0
+	cout << persistentTrie.persistentCheckString(heads[3] , "persistent") << endl;	// Output : 1
 
-	cout << persistentTrie.persistentCheckString(heads[3] , "trie") << endl;	//output : 0
-	cout << persistentTrie.persistentCheckString(heads[4] , "trie") << endl;	//output : 1
+	cout << persistentTrie.persistentCheckString(heads[3] , "trie") << endl;	// Output : 0
+	cout << persistentTrie.persistentCheckString(heads[4] , "trie") << endl;	// Output : 1
 
 
 	return 0;
