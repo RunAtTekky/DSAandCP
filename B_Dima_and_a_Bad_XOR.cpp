@@ -15,82 +15,56 @@ void solve() {
         }
     }
 
-    // dp[row][col] => {val,idx}
-    vector<vector<vector<pair<int,int>>>> dp(n+1, vector<vector<pair<int,int>>>(m+1));
+    // dp[i][x] = {
+    //      is possible to make x from first i rows,
+    //      choice
+    //}
+    vector<vector<pair<bool,int>>> dp(n+1, vector<pair<bool,int>>(1024));
 
-    for (int col=1; col<=m; col++) {
-        pair<int,int> pr = {matrix[n-1][col],col};
-        dp[n-1][col].push_back(pr);
+    for (int j=1; j<=m; j++) {
+        dp[0][matrix[0][j]].first = true;
+        dp[0][matrix[0][j]].second = j;
     }
 
-    int idx = -1;
-    bool found = false;
-    for (int row=n-2; row>=0; row--) {
-        for (int col=1; col<=m; col++) {
+    // dp[i][x] = (dp[i-1][ x ^ matrix[i][j] ]) ? true : false;
+    for (int i=1; i<n; i++) {
 
-            set<int> st;
-            for (int below=1; below<=m; below++) {
-
-                for (auto pr: dp[row+1][below]) {
-                    // keep track of all the possibilities have been filled
-                    int new_val = pr.first ^ matrix[row][col];
-                    pair<int,int> new_pr = {new_val, below};
-
-                    int sz = st.size();
-                    st.insert(new_val);
-
-                    if (sz != st.size()) {
-                        dp[row][col].push_back(new_pr);
-
-                        // If on starting row and positive value is found
-                        if (row == 0 && new_val > 0) {
-                            idx = below;
-                            found = true;
-                            YES;
-                            cout << col << " ";
-                            break;
-                        }
-
-                    }
-                    if (st.size() == 1024) break;
+        for (int x=0; x<=1023; x++) {
+            for (int j=1; j<=m; j++) {
+                dp[i][x].first = (dp[i-1][x^matrix[i][j]].first) ? true : false;
+                if (dp[i][x].first) {
+                    dp[i][x].second = j;
+                    break;
                 }
-                if (st.size() == 1024) break;
-                if (found) break;
-            }
-            if (found) break;
-        }
-        if (found) break;
-    }
-
-    // Edge case, when there is only one row
-    if (n == 1) {
-        for (int i=1; i<=m; i++) {
-            if (matrix[0][i] != 0) {
-                YES;
-                cout << i << " ";
-                return;
             }
         }
     }
 
-    if (!found) {
-        NO; return;
-    }
-
-    int curr = 1;
-
-    while (curr < n) {
-        auto vec_pr = dp[curr][idx];
-
-        cout << idx << " ";
-
-        for (auto pr : vec_pr) {
-            if (pr.first > 0) {
-                idx = pr.second;
-            }
+    int value_made = -1;
+    for (int i=1; i<=1023; i++) {
+        if (dp[n-1][i].first) {
+            YES;
+            value_made = i;
+            break;
         }
-        curr++;
     }
+
+    if (value_made == -1) {NO; return;}
+
+    int curr = n-1;
+    vector<int> answers;
+    while (curr>=0) {
+        int choice = dp[curr][value_made].second;
+        answers.push_back(choice);
+
+        value_made ^= matrix[curr][choice];
+        curr--;
+    }
+
+    reverse(answers.begin(), answers.end());
+    for (auto &ele : answers) cout << ele << " ";
+    cout << "\n";
+
 
 
 }
