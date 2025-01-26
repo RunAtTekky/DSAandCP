@@ -27,9 +27,7 @@ map<vector<long long>, long long> dp;
 long long h(vector<long long> vec) {
     if (vec.size() == 1) return vec[0];
 
-    auto rev_vec = get_reverse(vec);
     if (dp.find(vec) != dp.end()) return dp[vec];
-    if (dp.find(rev_vec) != dp.end()) return dp[rev_vec];
 
     // cout << "Initial\n";
     // for (auto &ele : vec) cout << ele << " ";
@@ -42,6 +40,7 @@ long long h(vector<long long> vec) {
     long long normal = h(difference_normal);
 
     // Reverse and difference
+    auto rev_vec = get_reverse(vec);
     auto diff_vec = get_diff(rev_vec);
     long long rev = h(diff_vec);
 
@@ -49,11 +48,9 @@ long long h(vector<long long> vec) {
     // for (auto &ele : vec) cout << ele << " ";
     // cout << "\n";
 
-    long long best_ans = max(dp[vec], max(normal, rev));
-    dp[vec] = best_ans;
-    dp[rev_vec] = best_ans;
+    long long sum = accumulate(vec.begin(), vec.end(), 0LL);
 
-    return best_ans;
+    return dp[vec] = max({dp[vec], max(normal, rev), sum});
     // return max(normal, rev);
 }
 
