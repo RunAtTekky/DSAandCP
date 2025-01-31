@@ -1,80 +1,73 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define debug(x) cerr << #x << ' ' << x << '\n';
-
-long long helper(bool first_turn, string curr, long long s_a, long long s_b, map<pair<string,pair<long long,long long>>, long long>& dp) {
-    if (curr.size() == 1) {
-        if (first_turn) {
-            return max(s_a + curr[0] - '0', s_b);
-        }
-        else {
-            return max(s_a, s_b + curr[0] - '0');
-        }
-    }
-
-    // debug(curr);
-    // debug(first_turn);
-    // debug(s_a);
-    // debug(s_b);
-
-    if (dp.find({curr, {s_a, s_b}}) != dp.end()) return dp[{curr, {s_a,s_b}}];
-
-    int sz = curr.size();
-
-    // Take first
-    int take_first;
-    if (first_turn) {
-        take_first = helper(!first_turn, curr.substr(1), s_a + (curr[0] - '0'), s_b, dp);   
-    }
-    else {
-        take_first = helper(!first_turn, curr.substr(1), s_a, s_b + (curr[sz-1] - '0'), dp);   
-    }
-
-    // Take last
-    int take_last;
-    if (first_turn) {
-        take_last = helper(!first_turn, curr.substr(0,curr.size()-1), s_a + (curr[0] - '0'), s_b, dp);   
-    }
-    else {
-        take_last = helper(!first_turn, curr.substr(0,curr.size()-1), s_a, s_b + (curr[sz-1] - '0'), dp);   
-    }
-
-    if (first_turn) {
-        return dp[{curr, {s_a, s_b}}] = max(take_first, take_last);
-    }
-
-    return dp[{curr, {s_a, s_b}}] = min(take_first, take_last);
-
+long long get_sum(vector<long long>& pref, int start, int end) {
+    return pref[start+1] - pref[end];
 }
 
 void solve() {
     int n; cin >> n;
 
-    vector<int> numbers(n);
-    for (auto &number : numbers) cin >> number;
+    vector<int> vec(n);
+    for (auto &ele : vec) cin >> ele;
 
-    // for (auto &ele : numbers) cout << ele << " ";
-    // cout << "\n";
+    // Solve for 1, 2, 3 and so on...
+    // dp[i][j] => maximum score possible with subarray vec[i..j]
+    /*
+        dp[i][j] = max(
+            vec[i] + sum[i+1..j] - dp[i+1][j],
+            vec[j] + sum[i..j-1] - dp[i][j-1]
+        )
+    */
+
+    vector<long long> pref(n+1);
+    for (int i=1; i<=n; i++) {
+        pref[i] = pref[i-1] + vec[i-1];
+    }
+    for (auto &ele : pref) cout << ele << " ";
+    cout << "\n";
     
     
 
-    // dp[string][score_a][score_b] => max^m possible score player A can get
-    // when we have string and the score is score_a and score_b
-
-    map<pair<string,pair<long long,long long>>, long long> dp;
-
-    // dp[{"51", {3,4}}] = 8
-
-    string s = "";
-    for (auto number : numbers) {
-        int num = number + '0';
-        s.push_back(num);
+    vector<vector<long long>> dp(n, vector<long long>(n));
+    for (int sz=1; sz<=n; sz++) {
+        for (int initial=0; initial+sz<=n; initial++) {
+            // Now dp[initial..initial+sz] = dp[initial]
+            int i = initial, j=initial+sz-1;
+            if (i==j) {
+                dp[i][j] = vec[i];
+                continue;
+            }
+            if (i==0 && j==2) {
+                cout << dp[i+1][j] << " ";
+                cout << dp[i][j-1] << " ";
+            }
+            dp[i][j] = max(
+                vec[i] + get_sum(pref, i+1, j) - dp[i+1][j],
+                vec[j] + get_sum(pref, i,j-1) - dp[i][j-1]
+            );
+        }
     }
 
-    long long ans = helper(true, s, 0, 0, dp);
+    // for (auto &vec : dp) {
+    //     for (auto &ele : vec) {
+    //         cout << ele << " ";
+    //     }
+    //     cout << "\n";
+    // }
+    // for (int i=0; i<n; i++) {
+    //     for (int j=0; j<n; j++) {
+    //         cout << i << " " << j << " : ";
+    //         cout << dp[i][j] << "\n";
+    //     }
+    //     cout << "\n";
+    // }
+    // cout << "\n";
+    
 
-    cout << ans << "\n";
+
+    // Final subproblem
+    cout << dp[0][n-1] << "\n";
 
 }
 
