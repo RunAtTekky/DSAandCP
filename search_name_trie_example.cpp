@@ -156,6 +156,8 @@ void solve() {
 
     cout << (trie.checkString(target) ? "FOUND" : "NOT FOUND") << "\n";
 
+	cout << (trie.checkPrefix("ann") ? "FOUND" : "NOT FOUND") << "\n";
+
 
 }
 
