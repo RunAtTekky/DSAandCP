@@ -3,53 +3,38 @@ using namespace std;
 
 typedef long long ll;
 
-const int N = 100;
+const int MAX_N = 4e4 + 5;
 const int MOD = 1e9 + 7;
 
-// vector<int> palindromes;
-unordered_set<int> palindromes;
+vector<ll> palindrome_numbers;
 
-unordered_map<int,pair<int,int>> dp;
-
-bool is_pal(int x) {
-    string str = to_string(x);
-
-    string rev = str;
-    reverse(rev.begin(), rev.end());
-
-    return str == rev;
-}
+vector<ll> dp;
 
 void precomp() {
-    for (int i=1; i<=N; i++) {
-        if(is_pal(i)) {
-            palindromes.insert(i);
-        }
+    for (int i=1; i<=MAX_N; i++) {
+        string curr = to_string(i);
+
+        string rev = curr;
+        reverse(rev.begin(), rev.end());
+
+        if (curr == rev) palindrome_numbers.push_back(i);
     }
 
-    for (int i=1; i<N; i++) {
-        int extras = 0;
-        dp[i].first += dp[i-1].first;
-        for (int j=i-2; j>=0; j--) {
-            if (j + j < i) break;
-            if (palindromes.count(i-j)) extras += dp[j].second;
+    dp = vector<ll>(MAX_N);
+
+    dp[0] = 1;
+
+    for (auto &p : palindrome_numbers) {
+        for (int i=p; i<MAX_N; i++) {
+            dp[i] = (dp[i] + dp[i-p]) % MOD;
         }
-
-        if (palindromes.count(i)) {
-            extras++;
-        }
-
-        dp[i].first += extras;
-        dp[i].second = extras;
-
-        cout << i << " " << dp[i].first << " " << dp[i].second << "\n";
     }
 }
 
 void solve() {
     ll n; cin >> n;
 
-    cout << dp[n].first << "\n";
+    cout << dp[n] << "\n";
 }
 
 int main() {
