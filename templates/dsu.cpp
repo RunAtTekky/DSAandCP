@@ -6,11 +6,11 @@ typedef long long ll;
 class DSU {
 private:
     vector<int> parent;
-    vector<int> rank;
+    vector<int> size;
     int count = 0;
 
 public:
-    DSU(int n) : parent(n), rank(n) {
+    DSU(int n) : parent(n), size(n,1) {
         iota(parent.begin(), parent.end(), 0);
         count = n;
     }
@@ -20,24 +20,27 @@ public:
     }
 
     void connect(int a, int b) {
-        int aroot = find(a);
-        int broot = find(b);
-
-        if (aroot == broot) return;
-
-        if (rank[aroot] < rank[broot]) {
-            swap(aroot, broot);
+        a = find(a);
+        b = find(b);
+        if (a != b) {
+            if (size[a] < size[b])
+                swap(a, b);
+            parent[b] = a;
+            size[a] += size[b];
+            count--;
         }
-        parent[broot] = aroot;
-        count--;
     }
 
     bool connected(int a, int b) {
         return find(a) == find(b);
     }
 
-    void reset(int x) {
-        parent[x] = x;
+    int components() {
+        return count;
+    }
+
+    int componentSize(int x) {
+        return size[find(x)];
     }
 };
 
