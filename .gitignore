@@ -1,3 +1,5 @@
 .cph
 .vscode/tasks.json
 .vscode/settings.json
+*.txt
+*.out
