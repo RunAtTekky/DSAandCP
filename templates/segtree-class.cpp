@@ -86,7 +86,7 @@ int main() {
 
     // Create random array
     srand(time(0));
-    const ll MAXI = 100;
+    const ll MAXI = 1000;
     ll n = rand() % MAXI;
     vector<ll> a(n);
     for (int i=0; i<n; i++) {
@@ -103,6 +103,15 @@ int main() {
         ll l = rand() % n;
         ll r = rand() % n;
         if (l>r) swap(l,r);
+
+        ll choice = rand() % 2;
+
+        if (choice == 0) {
+            ll add_this = rand() % n;
+            st->rangeUpdate(l, r, add_this);
+            for (int i=l; i<=r; i++) a[i] += add_this;
+            continue;
+        }
 
         ll sum_of_range = accumulate(a.begin() + l, a.begin() + r + 1, 0LL);
         ll sum_from_segtree = st->rangeSum(l, r);
