@@ -50,6 +50,8 @@ public:
 
 int main() {
     // Test the segment tree here
+
+    // Create random array
     srand(time(0));
     const ll MAXI = 100;
     ll n = rand() % MAXI;
@@ -58,8 +60,10 @@ int main() {
         a[i] = rand() % MAXI;
     }
 
+    // Build the segment tree
     SegTree *st = new SegTree(0, n-1, a);
 
+    // Test queries
     ll queries = 1000;
     bool isWrong = false;
     for (int q=0; q<queries; q++) {

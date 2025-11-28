@@ -3,44 +3,55 @@ using namespace std;
 
 typedef long long ll;
 
-const int N = 4e5;
+class SegTree {
+public:
+    vector<ll> segment;
+    vector<ll> vec;
 
-vector<int> segment(N);
-vector<ll> og_vec;
+    SegTree(ll n, vector<ll> vec) {
+        segment.resize(4*n + 1);
+        this->vec = vec;
 
-void build_segment_tree(int index, int low, int high) {
-    if (low == high) {
-        segment[index] = og_vec[low];
-        return;
+        build_segment_tree(0, 0, n-1);
     }
 
-    int mid = (low + high) / 2;
+    void build_segment_tree(int index, int low, int high) {
+        if (low == high) {
+            segment[index] = vec[low];
+            return;
+        }
 
-    build_segment_tree(2*index + 1, low, mid);
-    build_segment_tree(2*index + 2, mid+1, high);
+        int mid = (low + high) / 2;
 
-    segment[index] = max(segment[2*index+1], segment[2*index+2]);
-}
+        build_segment_tree(2*index + 1, low, mid);
+        build_segment_tree(2*index + 2, mid+1, high);
 
-int query_segment_tree(int index, int low, int high, int l, int r) {
+        segment[index] = max(segment[2*index+1], segment[2*index+2]);
+    }
 
-    // Completely has it -> return the value at that index
-    if (l <= low && high <= r) return segment[index];
+    int query_segment_tree(int index, int low, int high, int l, int r) {
 
-    // Doesn't have it -> return worst value
-    if (l > high || r < low) return INT_MIN;
+        // Completely has it -> return the value at that index
+        if (l <= low && high <= r) return segment[index];
 
-    int mid = (low + high) / 2;
+        // Doesn't have it -> return worst value
+        if (l > high || r < low) return INT_MIN;
 
-    // Overlapping -> go both side
-    int lft = query_segment_tree(2*index+1, low, mid, l, r);
-    int rgt = query_segment_tree(2*index+2, mid+1, high, l, r);
+        int mid = (low + high) / 2;
 
-    return max(lft, rgt);
-}
+        // Overlapping -> go both side
+        int lft = query_segment_tree(2*index+1, low, mid, l, r);
+        int rgt = query_segment_tree(2*index+2, mid+1, high, l, r);
+
+        return max(lft, rgt);
+    }
+};
+
 
 int main() {
     // Test the segment tree here
+
+    // Create a random array
     srand(time(0));
     const ll MAXI = 100;
     ll n = rand() % MAXI;
@@ -49,11 +60,11 @@ int main() {
         a[i] = rand() % MAXI;
     }
 
-    og_vec = a;
-    build_segment_tree(0, 0, n-1);
+    // Build the segment tree
+    SegTree st = SegTree(n, a);
 
+    // Test queries
     ll queries = 1000;
-
     bool isWrong = false;
     for (int q=0; q<queries; q++) {
         ll l = rand() % n;
@@ -61,7 +72,7 @@ int main() {
         if (l>r) swap(l,r);
 
         ll maxi = *max_element(a.begin() + l, a.begin() + r + 1);
-        ll max_from_segtree = query_segment_tree(0, 0, n-1, l, r);
+        ll max_from_segtree = st.query_segment_tree(0, 0, n-1, l, r);
 
         if (maxi != max_from_segtree) {
             isWrong = true;
