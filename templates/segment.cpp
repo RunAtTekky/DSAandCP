@@ -1,10 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 1e5;
+typedef long long ll;
 
-vector<int> segment(4e5);
-vector<int> og_vec;
+const int N = 4e5;
+
+vector<int> segment(N);
+vector<ll> og_vec;
 
 void build_segment_tree(int index, int low, int high) {
     if (low == high) {
@@ -37,23 +39,42 @@ int query_segment_tree(int index, int low, int high, int l, int r) {
     return max(lft, rgt);
 }
 
-void solve() {
-    int n; cin >> n;
+int main() {
+    // Test the segment tree here
+    srand(time(0));
+    const ll MAXI = 100;
+    ll n = rand() % MAXI;
+    vector<ll> a(n);
+    for (int i=0; i<n; i++) {
+        a[i] = rand() % MAXI;
+    }
 
-    vector<int> vec(n);
-    for (auto &ele : vec) cin >> ele;
-
-    og_vec = vec;
-
+    og_vec = a;
     build_segment_tree(0, 0, n-1);
 
-    int l = 3, r = 8;
-    cout << query_segment_tree(0, 0, n-1, l, r) << "\n";
+    ll queries = 1000;
 
-}
+    bool isWrong = false;
+    for (int q=0; q<queries; q++) {
+        ll l = rand() % n;
+        ll r = rand() % n;
+        if (l>r) swap(l,r);
 
-int main() {
-    int t; cin >> t;
+        ll maxi = *max_element(a.begin() + l, a.begin() + r + 1);
+        ll max_from_segtree = query_segment_tree(0, 0, n-1, l, r);
 
-    while(t--) solve();
+        if (maxi != max_from_segtree) {
+            isWrong = true;
+            cout << "WA" << "\n";
+            cout << q << " " << l << " " << r << "\n";
+            cout << maxi << " " << max_from_segtree << "\n";
+
+            for (auto &ele : a) cout << ele << " ";
+            cout << "\n";
+            
+            break;
+        }
+    }
+
+    if (!isWrong) cout << "AC" << "\n";
 }
