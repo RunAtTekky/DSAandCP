@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <numeric>
 using namespace std;
 
 typedef long long ll;
@@ -9,12 +8,13 @@ public:
     SegTree *lft;
     SegTree *rgt;
 
-    ll leftmost, rightmost;
-    ll sum;
+    int leftmost, rightmost;
+    ll sum, lazy;
 
-    SegTree(int l, int r, vector<ll> a) {
+    SegTree(int l, int r, vector<ll>& a) {
         this->leftmost = l;
         this->rightmost = r;
+        this->lazy = 0;
 
         if (leftmost == rightmost) {
             sum = a[l];
@@ -26,6 +26,19 @@ public:
         }
     }
 
+    void propagate() {
+        if (lazy == 0) return;
+
+        sum += (rightmost - leftmost + 1) * lazy;
+
+        if (leftmost != rightmost) {
+            lft->lazy += lazy;
+            rgt->lazy += lazy;
+        }
+
+        lazy = 0;
+    }
+
     void recalc() {
         if (leftmost == rightmost) return;
         sum = lft->sum + rgt->sum;
@@ -33,14 +46,34 @@ public:
 
     void pointUpdate(int index, ll newVal) {
         if (leftmost == rightmost) {
-            sum = newVal;
-            return;
+            sum = newVal; return;
         }
         (index <= lft->rightmost) ? lft->pointUpdate(index, newVal) : rgt->pointUpdate(index, newVal);
         recalc();
     }
 
+    void rangeUpdate(int l, int r, ll add_this) {
+        propagate();
+
+        // No overlap
+        if (r < leftmost || l > rightmost) return;
+
+        // Complete overlap
+        if (l <= leftmost && r >= rightmost) {
+            this->lazy += add_this;
+            propagate();
+            return;
+        }
+
+        // Partial
+        lft->rangeUpdate(l, r, add_this);
+        rgt->rangeUpdate(l, r, add_this);
+
+        recalc();
+    }
+
     ll rangeSum(int l, int r) {
+        propagate();
         if (r < leftmost || l > rightmost) return 0;
         if (l <= leftmost && r >= rightmost) return sum;
 
