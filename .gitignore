@@ -1,5 +1,4 @@
 .cph
-.vscode/tasks.json
-.vscode/settings.json
+.vscode
 *.txt
 *.out
