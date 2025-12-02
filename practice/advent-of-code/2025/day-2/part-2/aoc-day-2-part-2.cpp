@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include <fstream>
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -101,7 +103,7 @@ bool is_invalid(ll num) {
 
     for (const auto &divisor : divisors) {
         if (all_equal(divisor, num_s)) {
-            print_split(divisor, num_s);
+            // print_split(divisor, num_s);
             return true;
         }
     }
@@ -120,14 +122,27 @@ ll get_sum_of_invalid(ll lft, ll rgt) {
     return sum;
 }
 
+void take_input(string &input) {
+    string file_name; cin >> file_name;
+
+    ifstream inputFile(file_name);
+
+    if (inputFile.is_open()) {
+        getline(inputFile, input);
+    } else {
+        cerr << "Error: Could not open the file" << file_name << "\n";
+    }
+}
+
 void solve() {
     string input; cin >> input;
+    // take_input(input);
 
     // { (l,r), (l,r), (l,r)} => ranges
     vector<vector<ll>> ranges = get_ranges(input);
 
-    for (auto &range : ranges) cout << range[0] << " " << range[1] << "\n";
-    cout << "\n";
+    // for (auto &range : ranges) cout << range[0] << " " << range[1] << "\n";
+    // cout << "\n";
 
     ll total_invalid_sum = 0;
     for (const auto &range : ranges) {
@@ -137,7 +152,7 @@ void solve() {
         total_invalid_sum += sum_of_invalid;
     }
 
-    cout << "\nFinal Answer" << "\n";
+    // cout << "\nFinal Answer" << "\n";
     cout << total_invalid_sum << "\n";
 }
 
